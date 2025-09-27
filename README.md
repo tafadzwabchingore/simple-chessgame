@@ -25,7 +25,7 @@ the use of inheritance, polymorphism, and dynamic memory management.
   console features.
 
 ## Libraries Used
-- **<iostream>**: Provides input/output functionality for console interaction.
+- <iostream>: Provides input/output functionality for console interaction.
 - **<vector>**: STL container used to represent the 8x8 chess board.
 - **<string>**: Handles user input and algebraic chess notation (e.g., "e2e4").
 - **<memory>**: Provides smart pointers (`std::unique_ptr`) for safe, 
