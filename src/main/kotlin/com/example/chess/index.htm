@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Chess Demo</title>
+  <style>body{font-family:monospace}</style>
+</head>
+<body>
+  <h1>Kotlin Chess Demo</h1>
+  <div>
+    <button id="create">Create Game</button>
+    <input id="gameId" placeholder="game id">
+    <input id="name" placeholder="name">
+    <button id="join">Join</button>
+  </div>
+
+  <div>
+    <button id="refresh">Refresh</button>
+    <pre id="board"></pre>
+    <div>
+      <input id="playerId" placeholder="player id">
+      <input id="from" placeholder="from e2">
+      <input id="to" placeholder="to e4">
+      <button id="move">Move</button>
+    </div>
+    <div id="status"></div>
+  </div>
+
+<script>
+async function req(path, opts={}) {
+  const r = await fetch(path, opts)
+  return r.json()
+}
+document.getElementById("create").onclick = async () => {
+  const res = await req('/game/create', { method: 'POST' })
+  document.getElementById("gameId").value = res.gameId
+  document.getElementById("status").innerText = 'Created ' + res.gameId
+}
+document.getElementById("join").onclick = async () => {
+  const id = document.getElementById("gameId").value
+  const name = document.getElementById("name").value || 'Player'
+  const res = await req(`/game/${id}/join`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({name}) })
+  document.getElementById("playerId").value = res.id
+  document.getElementById("status").innerText = `Joined as ${res.name} (${res.color})`
+}
+document.getElementById("refresh").onclick = async () => {
+  const id = document.getElementById("gameId").value
+  const res = await req(`/game/${id}/state`)
+  document.getElementById("board").innerText = res.boardText.join('\n')
+  document.getElementById("status").innerText = `Turn: ${res.currentTurn} | Status: ${res.status}`
+}
+document.getElementById("move").onclick = async () => {
+  const id = document.getElementById("gameId").value
+  const playerId = document.getElementById("playerId").value
+  const from = document.getElementById("from").value
+  const to = document.getElementById("to").value
+  const res = await req(`/game/${id}/move`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({playerId, from, to})})
+  document.getElementById("status").innerText = JSON.stringify(res)
+  await document.getElementById("refresh").click()
+}
+</script>
+</body>
+</html>
